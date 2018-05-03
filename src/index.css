@@ -5,3 +5,7 @@ body {
 a {
   color: #FF408E;
 }
+
+.group, .group:not(:last-child) {
+  margin-bottom: 15px !important;
+}

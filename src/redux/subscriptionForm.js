@@ -1,4 +1,4 @@
-import validator from 'validator';
+import { default as doValidate } from 'validate.js'
 
 /*
  * Prefix of a module
@@ -13,6 +13,7 @@ const PREFIX = "SUBSCRIPTION_FORM_"
 export const ON_CHANGE = `${PREFIX}_ON_CHANGE`
 export const VALIDATE = `${PREFIX}_VALIDATE`
 export const ON_SUBMIT = `${PREFIX}_ON_SUBMIT`
+export const TOGGLE_BILLING = `${PREFIX}_TOGGLE_BILLING`
 
 /*
  * action creators
@@ -24,6 +25,10 @@ export function onChange(name, value) {
 
 export function validate() {
   return { type: VALIDATE }
+}
+
+export function toggleBilling() {
+  return { type: TOGGLE_BILLING }
 }
 
 // For the sake of simplicity
@@ -38,10 +43,10 @@ export function onSubmit() {
 const initialState = {
   meta: {
     touched: false,
-    valid: false
+    valid: false,
+    showBilling: false,
   },
   values: {
-    first_name: '',
   },
   errors: {
 
@@ -59,15 +64,9 @@ export function reducer(state = initialState, action) {
         }
       }
     case VALIDATE:
-      const result = doValidation(state.values)
-
       return {
         ...state,
-        meta: {
-          ...state.meta,
-          valid: result.valid,
-        },
-        errors: result.errors
+        errors: doValidate(state.values, constraints)
       }
     case ON_SUBMIT:
       return {
@@ -77,80 +76,96 @@ export function reducer(state = initialState, action) {
           touched: true,
         },
       }
+    case TOGGLE_BILLING:
+      return {
+        ...state,
+        meta: {
+          ...state.meta,
+          showBilling: !state.meta.showBilling,
+        },
+      }
   }
 
   return state
 }
 
 /*
- * reducers
+ * validators
  */
 
-// Could be more declarative
-function doValidation(values) {
-  const errors = {}
-  let valid = false
+// validate.validators.custom = function(value, options, key, attributes) {
+//   console.log(value);
+//   console.log(options);
+//   console.log(key);
+//   console.log(attributes);
+//   return "is totally wrong";
+// };
 
-  if (validator.isEmpty(values.first_name || '')) {
-    errors.first_name = 'This field is required'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.last_name || '')) {
-    errors.last_name = 'This field is required'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.street || '')) {
-    errors.street = 'This field is required'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.country || '')) {
-    errors.country = 'This field is required'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.city || '')) {
-    errors.city = 'This field is required'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.state || '')) {
-    errors.state = 'This field is required'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.zip || '')) {
-    errors.zip = 'This field is required'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.cc_number || '')) {
-    errors.cc_number = 'This field is required'
-    valid = false
-  } else if (!validator.isCreditCard(values.cc_number || '')) {
-    errors.cc_number = 'Incorrect Credit Card Number'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.cc_code || '')) {
-    errors.cc_code = 'This field is required'
-    valid = false
-  } else if (values.cc_code === '111') {
-    errors.cc_code = 'Against the rules...'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.cc_month || '')) {
-    errors.cc_month = 'This field is r6quired'
-    valid = false
-  }
-
-  if (validator.isEmpty(values.cc_year || '')) {
-    errors.cc_year = 'This field is r6quired'
-    valid = false
-  }
-
-  return { valid, errors }
-}
+const constraints = {
+  first_name: { 
+    presence: true,
+    length: {
+      maximum: 50,
+      message: "must be no more than 50 characters"
+    }
+  },
+  last_name: { 
+    presence: true,
+    length: {
+      maximum: 50,
+      message: "must be no more than 50 characters"
+    }
+  },
+  shipping_street: { 
+    presence: true,
+    length: {
+      maximum: 50,
+      message: "must be no more than 50 characters"
+    }
+  },
+  shipping_zip: { 
+    presence: true,
+  },
+  shipping_city: { 
+    presence: true,
+    length: {
+      maximum: 10,
+      message: "must be no more than 10 characters"
+    }
+  },
+  shipping_state: { 
+    presence: true,
+    length: {
+      maximum: 10,
+      message: "must be no more than 10 characters"
+    }
+  },
+  shipping_country: { 
+    presence: true,
+    length: {
+      maximum: 10,
+      message: "must be no more than 10 characters"
+    }
+  },
+  cc_number: { 
+    presence: true,
+    format: {
+      pattern: /^(34|37|4|5[1-5]).*$/,
+      message: 'is not valid'
+    },
+    length: function(value, attributes, attributeName, options, constraints) {
+      if (value) {
+        // Amex
+        if ((/^(34|37).*$/).test(value)) return {is: 15};
+        // Visa, Mastercard
+        if ((/^(4|5[1-5]).*$/).test(value)) return {is: 16};
+      }
+      // Unknown card, don't validate length
+      return false;
+    }
+  },
+  // cc_code: function(value, attributes, attributeName, options, constraints) {
+  //   if (value === x) return 'is not valid';
+  //   return null;
+  // }
+};

@@ -39,7 +39,7 @@
 
 .button {
   background: #FF458F;
-  padding: 15px 40px 15px 30px;
+  padding: 13px 110px 13px 60px;
   font-size: 18px;
   color: white;
   text-transform: uppercase;
@@ -47,15 +47,28 @@
   margin-left: 25px;
   cursor: pointer;
   transition: all 300ms;
+  position: relative;
 
   &:hover {
     background: #F02676;
+
+    &:after {
+      transform: translateY(-50%) translateX(10px);
+    }
   }
 
   &:after {
-    content: " ";
-
     background-image: url(./arrow.png);
+
+    content: " ";
+    width: 22px;
+    height: 16px;
+
+    transition: all 300ms;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 35px;
   }
 }
 
@@ -65,12 +78,46 @@
 }
 
 /* Gap */
-.group:not(:last-child) {
-  margin-bottom: 15px;
-}
-
 .gap {
   margin: 30px 0 0;
+}
+
+// Checkbox
+.checkbox {
+  padding-left: 30px;
+  position: relative;
+  font-size: 14px;
+  line-height: 1;
+
+  span {
+    position: absolute;
+    left: 0;
+    top: -2px;
+    border: 1px solid #FF458F;
+    width: 20px;
+    height: 20px;
+
+    transition: all 300ms;
+  }
+
+  input {
+    display: none;
+  }
+
+  input:checked ~ span {
+    background: #FF6BA6;
+
+    &:after {
+      content: '\2714';
+      position: absolute;
+      font-size: 15px;
+      color: white;
+      transition: all .2s;
+      top: 50%;
+      transform: translateY(-50%) translateX(-50%);
+      left: 50%;
+    }
+  }
 }
 
 /* Position */

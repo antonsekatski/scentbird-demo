@@ -9,22 +9,19 @@ import s from "./styles.module.scss";
 import Input from '../Input';
 import Select from '../Select';
 import Product from '../Product';
+import Address from '../Address';
 import CardForm from '../CardForm';
 
 // Actions
-import { onChange, onSubmit, validate } from '../../redux/subscriptionForm';
+import { onChange, onSubmit, validate, toggleBilling } from '../../redux/subscriptionForm';
 
 // Constants
 const FORM_NAME = 'subscriptionForm'
 
-const states = [{ value: 1, text: 'New York' }]
-const cities = [{ value: 1, text: 'New York' }]
-const countries = [{ value: 1, text: 'United States' }]
-
 // Component
 class SubscriptionForm extends Component {
   render() {
-    const { onChange, onSubmit } = this.props;
+    const { onChange, onSubmit, toggleBilling, showBilling } = this.props;
 
     return (
       <form className={s.wrapper} onSubmit={onSubmit}>
@@ -41,66 +38,58 @@ class SubscriptionForm extends Component {
         <div className={s.product}><Product /></div>
 
         <div className={classNames(s.main)}>
-            <h3 className={s.sectionTitle}>Shipping address</h3>
+          <h3 className={s.sectionTitle}>Shipping address</h3>
 
-            <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
-              <div className="column is-6">
-                <Input form={FORM_NAME} label="First name" name="first_name" onChange={onChange} />
-              </div>
-
-              <div className="column is-6">
-                <Input form={FORM_NAME} label="Last name" name="last_name" onChange={onChange} />
-              </div>
+          <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
+            <div className="column is-6">
+              <Input form={FORM_NAME} label="First name" name="first_name" onChange={onChange} />
             </div>
 
-            <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
-              <div className="column is-8">
-                <Input form={FORM_NAME} label="Street address" onChange={onChange} name="street" onChange={onChange} />
-              </div>
-              <div className="column is-4">
-                <Input form={FORM_NAME} label="Apt/Suite (Optional)" name="apt" onChange={onChange} />
-              </div>
-            </div>
-
-            <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
-              <div className="column is-4">
-                <Input form={FORM_NAME} label="Zip" name="zip" onChange={onChange} />
-              </div>
-              <div className="column is-4">
-                <Select form={FORM_NAME} label="City" name="city" defaultOption="City" options={cities} onChange={onChange} />
-              </div>
-              <div className="column is-4">
-                <Select form={FORM_NAME} label="State" name="state" defaultOption="State" options={states} onChange={onChange} />
-              </div>
-            </div>
-
-            <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
-              <div className="column">
-                <Select form={FORM_NAME} label="State" name="country" defaultOption="Country" options={countries} onChange={onChange} />
-              </div>
-            </div>
-
-            <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
-              <div className="column is-6">
-                <Input form={FORM_NAME} label="Phone number (optional)" />
-              </div>
-              <div className="column is-6 is-hidden-mobile">
-                <div className={s.helper}>We may send you special discounts and offers</div>
-              </div>
-            </div>
-
-            <div className={s.gap}></div>
-
-            <h3 className={s.sectionTitle}>Secure credit card payment</h3>
-
-            <CardForm form={FORM_NAME} onChange={onChange} />
-
-            <div className={s.bottom}>
-              <a href="#" className="is-hidden-mobile">Back</a>
-
-              <button className={s.button}>BUY NOW</button>
+            <div className="column is-6">
+              <Input form={FORM_NAME} label="Last name" name="last_name" onChange={onChange} />
             </div>
           </div>
+
+          <Address form={FORM_NAME} prefix="shipping" onChange={onChange} />
+
+          <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
+            <div className="column is-6">
+              <Input form={FORM_NAME} name="phone" label="Phone number (optional)" />
+            </div>
+            <div className="column is-6 is-hidden-mobile">
+              <div className={s.helper}>We may send you special discounts and offers</div>
+            </div>
+          </div>
+
+          <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
+            <div className="column">
+              <label className={s.checkbox}>
+                <input type="checkbox" name="" onChange={() => toggleBilling()} checked={!showBilling}/> Use this address as my billing address
+                <span></span>
+              </label>
+            </div>
+          </div>
+
+          <div className={classNames({ 'is-hidden': !showBilling })}>
+            <div className={s.gap}></div>
+
+            <h3 className={s.sectionTitle}>Billing address</h3>
+
+            <Address form={FORM_NAME} prefix="billing" onChange={onChange} />
+          </div>
+
+          <div className={s.gap}></div>
+
+          <h3 className={s.sectionTitle}>Secure credit card payment</h3>
+
+          <CardForm form={FORM_NAME} onChange={onChange} />
+
+          <div className={s.bottom}>
+            <a href="#" className="is-hidden-mobile">Back</a>
+
+            <button className={s.button}>BUY NOW</button>
+          </div>
+        </div>
 
         <div className={classNames(s.description)}>
           <img src={`${process.env.PUBLIC_URL}/bird.png`} alt=""/>
@@ -116,6 +105,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(onChange(name, value))
     dispatch(validate())
   },
+  toggleBilling: () => dispatch(toggleBilling()),
   onSubmit: (ev) => {
     ev.preventDefault();
 
@@ -126,4 +116,6 @@ const mapDispatchToProps = (dispatch) => ({
   } // for the sake of simplicity in the emulated environment
 })
 
-export default connect(() => ({}), mapDispatchToProps)(SubscriptionForm);
+export default connect((state) => ({
+  showBilling: state[FORM_NAME].meta.showBilling,
+}), mapDispatchToProps)(SubscriptionForm);

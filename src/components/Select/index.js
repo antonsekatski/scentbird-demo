@@ -23,7 +23,7 @@ class Select extends Component {
         <div className={s.container}>
           <select name={name} className={classNames(s.input, className)} value={value} onChange={this.onChange}>
             <option value="" className={s.placeholder}>{defaultOption}</option>
-            {options.map(x => <option value={x.value}>{x.text}</option>)}
+            {options.map(x => <option key={`${name}-${x.value}`} value={x.value}>{x.text}</option>)}
           </select>
         </div>
         {hasError ? <div className={s.helper}>{error}</div> : null}

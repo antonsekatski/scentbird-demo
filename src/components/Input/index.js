@@ -13,17 +13,18 @@ class Input extends Component {
   }
 
   render() {
-    const { name, label, value, touched, error, className='' } = this.props;
+    const { name, label, value='', touched, error=[], className='' } = this.props;
 
-    const hasError = touched && error;
+    const hasError = touched && error.length > 0;
+    const hasValue = value !== ''
 
     return (
-      <div className={classNames(s.root, { [s.error]: hasError })}>
+      <div className={classNames(s.root, { [s.error]: hasError, [s.withValue]: !hasError && hasValue })}>
         <div className={s.container}>
           <input name={name} className={classNames(s.input, className)} value={value} onChange={this.onChange} placeholder=" " />
           <label className={s.label}>{label}</label>
         </div>
-        {hasError ? <div className={s.helper}>{error}</div> : null}
+        {hasError ? <div className={s.helper}>{error[0]}</div> : null}
       </div>
     );
   }
@@ -31,7 +32,7 @@ class Input extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
   value: state[ownProps.form].values[ownProps.name],
-  error: state[ownProps.form].errors[ownProps.name] || null,
+  error: state[ownProps.form].errors[ownProps.name] || [],
   touched: state[ownProps.form].meta.touched
 })
 
