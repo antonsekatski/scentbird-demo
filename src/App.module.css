@@ -1,0 +1,13 @@
+.header {
+  margin: 20px 0 30px;
+}
+
+.footer {
+  margin-top: 100px;
+}
+
+@media screen and (max-width: 768px) {
+  .header {
+    text-align: center;
+  }
+}
