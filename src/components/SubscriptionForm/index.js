@@ -54,7 +54,7 @@ class SubscriptionForm extends Component {
 
           <div className={classNames('columns', 'is-variable', 'is-2', s.group)}>
             <div className="column is-6">
-              <Input form={FORM_NAME} name="phone" label="Phone number (optional)" />
+              <Input form={FORM_NAME} name="phone" label="Phone number (optional)" onChange={onChange} />
             </div>
             <div className="column is-6 is-hidden-mobile">
               <div className={s.helper}>We may send you special discounts and offers</div>

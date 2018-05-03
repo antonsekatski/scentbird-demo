@@ -33,6 +33,46 @@
   }
 }
 
+// Checkbox
+.checkbox {
+  padding-left: 30px;
+  position: relative;
+  font-size: 14px;
+  line-height: 1;
+
+  span {
+    border: 1px solid #979797;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+
+    margin-left: 10px;
+
+    transition: all 300ms;
+
+    position: relative;
+  }
+
+  input {
+    display: none;
+  }
+
+  input:checked ~ span {
+    box-shadow: inset 0 0 5px rgba(0,0,0,.3);
+
+    &:after {
+      content: '\2714';
+      position: absolute;
+      font-size: 22px;
+      color: #FF408E;
+      transition: all .2s;
+      top: -5px;
+      right: -5px;
+    }
+  }
+}
+
 @media screen and (max-width: 768px) {
   .root {
     border-color: transparent;

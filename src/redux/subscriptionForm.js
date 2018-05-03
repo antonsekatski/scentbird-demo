@@ -66,7 +66,10 @@ export function reducer(state = initialState, action) {
     case VALIDATE:
       return {
         ...state,
-        errors: doValidate(state.values, constraints)
+        errors: doValidate(state.values, {
+          ...constraints,
+          ...(state.meta.showBilling ? billingContraints : {})
+        }, { format: 'custom' })
       }
     case ON_SUBMIT:
       return {
@@ -93,65 +96,86 @@ export function reducer(state = initialState, action) {
  * validators
  */
 
-// validate.validators.custom = function(value, options, key, attributes) {
-//   console.log(value);
-//   console.log(options);
-//   console.log(key);
-//   console.log(attributes);
-//   return "is totally wrong";
-// };
+doValidate.formatters.custom = (errors) => {
+  const result = {}
+
+  errors.forEach(element => {
+    result[element.attribute] = element.options.message || `Can't be blank`
+  });
+
+  return result;
+};
 
 const constraints = {
-  first_name: { 
-    presence: true,
+  first_name: {
+    presence: { allowEmpty: false },
     length: {
       maximum: 50,
-      message: "must be no more than 50 characters"
+      message: "No more than 50 characters"
     }
   },
   last_name: { 
-    presence: true,
+    presence: { allowEmpty: false },
     length: {
       maximum: 50,
-      message: "must be no more than 50 characters"
+      message: "No more than 50 characters"
     }
   },
   shipping_street: { 
-    presence: true,
+    presence: { allowEmpty: false },
     length: {
       maximum: 50,
-      message: "must be no more than 50 characters"
+      message: "No more than 50 characters"
     }
   },
   shipping_zip: { 
-    presence: true,
+    presence: { allowEmpty: false },
   },
   shipping_city: { 
-    presence: true,
+    presence: { allowEmpty: false },
     length: {
       maximum: 10,
-      message: "must be no more than 10 characters"
+      message: "No more than 10 characters"
     }
   },
-  shipping_state: { 
-    presence: true,
+  shipping_state: {
+    presence: { allowEmpty: false },
     length: {
       maximum: 10,
-      message: "must be no more than 10 characters"
+      message: "No more than 10 characters"
     }
   },
-  shipping_country: { 
-    presence: true,
+  shipping_country: {
+    presence: { allowEmpty: false },
     length: {
       maximum: 10,
-      message: "must be no more than 10 characters"
+      message: "No more than 10 characters"
     }
+  },
+  cc_year: {
+    presence: { allowEmpty: false },
+  },
+  cc_month: {
+    presence: { allowEmpty: false },
+  },
+  cc_code: {
+    presence: { allowEmpty: false },
+    format: {
+      pattern: /^(?!111).*$/,
+      message: `Can't be 111`
+    },
+  },
+  phone: {
+    length: { 
+      maximum: 10,
+      message: "No more than 10 numbers"
+    },
   },
   cc_number: { 
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
       pattern: /^(34|37|4|5[1-5]).*$/,
-      message: 'is not valid'
+      message: 'Not valid'
     },
     length: function(value, attributes, attributeName, options, constraints) {
       if (value) {
@@ -164,8 +188,38 @@ const constraints = {
       return false;
     }
   },
-  // cc_code: function(value, attributes, attributeName, options, constraints) {
-  //   if (value === x) return 'is not valid';
-  //   return null;
-  // }
-};
+}
+
+const billingContraints = {
+  billing_street: { 
+    presence: { allowEmpty: false },
+    length: {
+      maximum: 50,
+      message: "No more than 50 characters"
+    }
+  },
+  billing_zip: { 
+    presence: { allowEmpty: false },
+  },
+  billing_city: { 
+    presence: { allowEmpty: false },
+    length: {
+      maximum: 10,
+      message: "No more than 10 characters"
+    }
+  },
+  billing_state: {
+    presence: { allowEmpty: false },
+    length: {
+      maximum: 10,
+      message: "No more than 10 characters"
+    }
+  },
+  billing_country: {
+    presence: { allowEmpty: false },
+    length: {
+      maximum: 10,
+      message: "No more than 10 characters"
+    }
+  },
+}

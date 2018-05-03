@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 
 // Components
 import Input from '../Input';
@@ -29,24 +30,31 @@ class CardForm extends Component {
         </div>
 
         <div className="columns is-variable is-2">
-          <div className="column is-8">
-            <div className="columns">
+          <div className="column is-8 is-12-mobile">
+            <div className="columns is-variable is-2">
               <div className="column">
-                <Input form={form} label="Credit card number" name="cc_number" onChange={onChange} className={s.whiteInput} />
+                <Input form={form} label="Credit card number" name="cc_number" help={true} onChange={onChange} className={s.whiteInput} />
               </div>
             </div>
       
-            <div className="columns is-variable is-2">
-              <div className="column is-3">
+            <div className="columns is-variable is-2 is-mobile">
+              <div className={classNames('column', 'is-4', s.mobile6)}>
                 <Select form={form} name="cc_month" defaultOption="Month" options={months} onChange={onChange} className={s.whiteInput} />
               </div>
-              <div className="column is-3">
+              <div className={classNames('column', 'is-4', s.mobile6)}>
                 <Select form={form} name="cc_year" defaultOption="Year" options={years} onChange={onChange} className={s.whiteInput} />
+              </div>
+              <div className="column is-4 is-hidden-mobile">
+                <div className={s.exp}>Exp.</div>
               </div>
             </div>
           </div>
-          <div className="column is-4">
-            <Input form={form} label="Security Code" name="cc_code" onChange={onChange} className={s.whiteInput} />
+          <div className="column is-4 is-8-mobile">
+            <div className={s.question}>
+              <Input form={form} label="Security Code" name="cc_code" maxLength={3} onChange={onChange} className={s.whiteInput} />
+
+              <span className={s.questionMark}></span>
+            </div>
           </div>
         </div>
       </div>

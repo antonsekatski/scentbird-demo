@@ -36,7 +36,13 @@ class Product extends Component {
 
           <div className={s.feature}>
             Credit (Balance $100)
-            <span>-$5</span>
+            <span>
+               <label className={s.checkbox}>
+                $50
+                <input type="checkbox" />
+                <span></span>
+              </label>
+            </span>
           </div>
         </div>
 
